@@ -1,50 +1,82 @@
+/*
+planning to conduct a standup comedy show in my home town
+so i dicided to create an appliation with a simple command prompt application
+no ticket cancelation as there is less time we welcome you to book your tickets
+as soon as possible
+*/
 package main
 
 import (
-	"CLI_Application/helper"
+	"CLI_Application/Ticketsent" //ticket to send to customer module
+	"CLI_Application/booking"    //booking ticket module
+	"CLI_Application/client"     //getting client data
+	"CLI_Application/greeting"   //welcoming the uset
+	"CLI_Application/helper"     //validating the user details
+	"database/sql"
 	"fmt"
-	"sync"
-	"time"
-)
 
-const conferenceTickets int = 250
+	_ "github.com/go-sql-driver/mysql"
+)
 
 var (
-	conferenceName        = "Stand-up comedy"
-	remainingTickets uint = 250
-	bookings              = make([]UserData, 0)
-	comedian              = "Zakir-khan"
+	conferenceName   = "Stand-up comedy"
+	remainingTickets uint
+	comedian         = "Zakir-khan"
+	sum              uint
 )
 
-type UserData struct {
-	firstName       string
-	lastName        string
-	email           string
-	numberOfTickets uint
-}
-
-var wg = sync.WaitGroup{}
+const conferenceTickets uint = 250
 
 func main() {
 
-	greetUsers()
+	db, err := sql.Open("mysql", "root:a@11189D001#@tcp(127.0.0.1:3306)/mydata")
+	if err != nil {
+		fmt.Println("error in connecting the db", err)
+	}
+	err = db.QueryRow("SELECT SUM(userTickets) FROM customer").Scan(&sum)
+	if err != nil {
+		fmt.Println("error in query row statement", err)
+		return
+	}
 
-	firstName, lastName, email, userTickets := getUserInput()
+	defer db.Close()
+
+	remainingTickets = conferenceTickets - sum
+
+	greeting.GreetUsers(comedian, conferenceName, remainingTickets, sum)
+
+	firstName, lastName, email, userTickets := client.GetUserInput()
+
 	isValidName, isValidEmail, isValidTicketNumber := helper.ValidateUserInput(firstName, lastName, email, userTickets, remainingTickets)
+
+	stmt, err := db.Prepare("INSERT INTO customer(firstName, lastName, email, userTickets) values(?,?,?,?)")
+	if err != nil {
+		fmt.Println("error in statement object", err)
+		return
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(firstName, lastName, email, userTickets)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
 	if isValidName && isValidEmail && isValidTicketNumber {
 
-		bookTicket(userTickets, firstName, lastName, email)
+		booking.BookTicket(userTickets, firstName, lastName, email, conferenceName)
 
-		wg.Add(1)
-		go sendTicket(userTickets, firstName, lastName, email)
+		Ticketsent.SendTicket(userTickets, firstName, lastName, email)
 
-		firstNames := getFirstNames()
+		firstNames := booking.GetFirstNames()
 		fmt.Printf("The first names of bookings are: %v\n", firstNames)
 
 		if remainingTickets == 0 {
 			fmt.Println("Our conference is booked out. Come back next year.")
 		}
+
+		fmt.Println(`have a nice day! keep smiling keep shining $`)
+
 	} else {
 		if !isValidName {
 			fmt.Println("first name or last name you entered is too short")
@@ -56,68 +88,4 @@ func main() {
 			fmt.Println("number of tickets you entered is invalid")
 		}
 	}
-
-	wg.Wait()
-}
-
-func greetUsers() {
-	fmt.Printf("%v welcomes you to the show", comedian)
-	fmt.Printf("Welcome to %v booking application\n", conferenceName)
-	fmt.Printf("We have total of %v tickets and %v are still available.\n", conferenceTickets, remainingTickets)
-	fmt.Println("Get your tickets here to attend")
-}
-
-func getFirstNames() []string {
-	firstNames := []string{}
-	for _, booking := range bookings {
-		firstNames = append(firstNames, booking.firstName)
-	}
-	return firstNames
-}
-
-func getUserInput() (string, string, string, uint) {
-	var firstName string
-	var lastName string
-	var email string
-	var userTickets uint
-
-	fmt.Println("Enter your first name: ")
-	fmt.Scan(&firstName)
-
-	fmt.Println("Enter your last name: ")
-	fmt.Scan(&lastName)
-
-	fmt.Println("Enter your email address: ")
-	fmt.Scan(&email)
-
-	fmt.Println("Enter number of tickets: ")
-	fmt.Scan(&userTickets)
-
-	return firstName, lastName, email, userTickets
-}
-
-func bookTicket(userTickets uint, firstName string, lastName string, email string) {
-	remainingTickets = remainingTickets - userTickets
-
-	var userData = UserData{
-		firstName:       firstName,
-		lastName:        lastName,
-		email:           email,
-		numberOfTickets: userTickets,
-	}
-
-	bookings = append(bookings, userData)
-	fmt.Printf("List of bookings is %v\n", bookings)
-
-	fmt.Printf("Thank you %v %v for booking %v tickets. You will receive a confirmation email at %v\n", firstName, lastName, userTickets, email)
-	fmt.Printf("%v tickets remaining for %v\n", remainingTickets, conferenceName)
-}
-
-func sendTicket(userTickets uint, firstName string, lastName string, email string) {
-	time.Sleep(10 * time.Second)
-	var ticket = fmt.Sprintf("%v tickets for %v %v", userTickets, firstName, lastName)
-	fmt.Println("#################")
-	fmt.Printf("Sending ticket:\n %v \nto email address %v\n", ticket, email)
-	fmt.Println("#################")
-	wg.Done()
 }
