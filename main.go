@@ -29,7 +29,7 @@ const conferenceTickets uint = 250
 
 func main() {
 
-	db, err := sql.Open("mysql", "root:a@11189D001#@tcp(127.0.0.1:3306)/mydata")
+	db, err := sql.Open("mysql", "UserName:Password@tcp(127.0.0.1:3306)/mydata")
 	if err != nil {
 		fmt.Println("error in connecting the db", err)
 	}
