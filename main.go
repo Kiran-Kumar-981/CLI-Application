@@ -22,7 +22,7 @@ var (
 	conferenceName   = "Stand-up comedy"
 	remainingTickets uint
 	comedian         = "Zakir-khan"
-	sum              uint
+	count              uint
 )
 
 const conferenceTickets uint = 250
@@ -33,7 +33,7 @@ func main() {
 	if err != nil {
 		fmt.Println("error in connecting the db", err)
 	}
-	err = db.QueryRow("SELECT SUM(userTickets) FROM customer").Scan(&sum)
+	err = db.QueryRow("SELECT SUM(userTickets) FROM customer").Scan(&count)
 	if err != nil {
 		fmt.Println("error in query row statement", err)
 		return
@@ -41,7 +41,7 @@ func main() {
 
 	defer db.Close()
 
-	remainingTickets = conferenceTickets - sum
+	remainingTickets = conferenceTickets - count
 
 	greeting.GreetUsers(comedian, conferenceName, remainingTickets, sum)
 
