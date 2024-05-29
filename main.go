@@ -1,9 +1,3 @@
-/*
-planning to conduct a standup comedy show in my home town
-so i dicided to create an appliation with a simple command prompt application
-no ticket cancelation as there is less time we welcome you to book your tickets
-as soon as possible
-*/
 package main
 
 import (
