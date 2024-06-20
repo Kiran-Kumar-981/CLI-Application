@@ -13,7 +13,7 @@ type UserData struct {
 
 var remainingTickets uint
 var bookings = make([]UserData, 0)
-
+//BookTickets function responds if there is no error in validating username and email then it reserves seats according to the number of tickets booked.
 func BookTicket(userTickets uint, firstName, lastName, email, conferenceName string) {
 
 	remainingTickets = remainingTickets - userTickets
