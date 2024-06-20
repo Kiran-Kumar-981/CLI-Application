@@ -1,5 +1,5 @@
 package mysql
-
+//as giving hot code is not a good practice so we can give DataBaseURL as database driver user 
 var (
 	DataBaseURL = "username:password#@tcp(127.0.0.1:3306)/@scema(eg: mydb)"
 )
