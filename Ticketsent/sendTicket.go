@@ -1,3 +1,4 @@
+//SendTicket is the function that is responsible for sending the tickets for the email id that is provided
 package Ticketsent
 
 import (
