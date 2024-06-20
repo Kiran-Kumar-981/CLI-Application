@@ -4,7 +4,7 @@ import (
 	"CLI_Application/Ticketsent" //ticket to send to customer module
 	"CLI_Application/booking"    //booking ticket module
 	"CLI_Application/client"     //getting client data
-	"CLI_Application/greeting"   //welcoming the uset
+	"CLI_Application/greeting"   //welcoming the user
 	"CLI_Application/helper"     //validating the user details
 	"database/sql"
 	"fmt"
@@ -22,7 +22,7 @@ var (
 const conferenceTickets uint = 250
 
 func main() {
-
+//db= database shortform opening and closing of database
 	db, err := sql.Open("mysql", "UserName:Password@tcp(127.0.0.1:3306)/mydata") // user name and pasword are confidencial so i replaced!!!
 	if err != nil {
 		fmt.Println("error in connecting the db", err)
