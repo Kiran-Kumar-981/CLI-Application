@@ -3,7 +3,7 @@ package client
 import (
 	"fmt"
 )
-
+//GetUserInput function gets the user's inputs and send them to helper package which then process for validating format
 func GetUserInput() (string, string, string, uint) {
 	var firstName string
 	var lastName string
