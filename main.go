@@ -37,7 +37,7 @@ func main() {
 
 	remainingTickets = conferenceTickets - count
 
-	greeting.GreetUsers(comedian, conferenceName, remainingTickets, sum)
+	greeting.GreetUsers(comedian, conferenceName, remainingTickets, count)
 
 	firstName, lastName, email, userTickets := client.GetUserInput()
 
