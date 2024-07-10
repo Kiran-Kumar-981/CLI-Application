@@ -1,4 +1,4 @@
-# Gin CLI Ticket Booking App
+# CLI Ticket Booking App
 
 # Overview
 
