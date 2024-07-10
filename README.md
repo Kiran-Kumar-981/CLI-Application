@@ -1,4 +1,4 @@
-### Gin CLI Ticket Booking App
+# Gin CLI Ticket Booking App
 
 # Overview
 
